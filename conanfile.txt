@@ -1,0 +1,18 @@
+[requires]
+opencv/4.5.5
+dlib/19.24
+
+[generators]
+cmake
+
+[options]
+dlib:with_jpeg=False
+dlib:with_png=False
+dlib:with_webp=False
+
+[imports]
+# 把 conan 包中所有的 bin 和 lib 文件夹的东西
+# 分别拷贝到目录 ./conan_bin 和 ./runtime
+# 这样做对你打包发布你程序的依赖 so 非常有帮助
+bin, * -> ./conan_bin
+lib, *.so* -> ./runtime
