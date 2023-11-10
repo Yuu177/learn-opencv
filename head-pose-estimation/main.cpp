@@ -14,25 +14,20 @@ int main(int argc, char **argv) {
   image_points.push_back(cv::Point2d(453, 469));  // Right mouth corner
 
   // 3D model points.
+  // 以鼻子为人脸坐标系原点，构建人脸 3d 模型
   std::vector<cv::Point3d> model_points;
-  model_points.push_back(cv::Point3d(0.0f, 0.0f, 0.0f));       // Nose tip
-  model_points.push_back(cv::Point3d(0.0f, -330.0f, -65.0f));  // Chin
-  model_points.push_back(
-      cv::Point3d(-225.0f, 170.0f, -135.0f));  // Left eye left corner
-  model_points.push_back(
-      cv::Point3d(225.0f, 170.0f, -135.0f));  // Right eye right corner
-  model_points.push_back(
-      cv::Point3d(-150.0f, -150.0f, -125.0f));  // Left Mouth corner
-  model_points.push_back(
-      cv::Point3d(150.0f, -150.0f, -125.0f));  // Right mouth corner
+  model_points.push_back(cv::Point3d(0.0f, 0.0f, 0.0f));          // Nose tip
+  model_points.push_back(cv::Point3d(0.0f, -330.0f, -65.0f));     // Chin
+  model_points.push_back(cv::Point3d(-225.0f, 170.0f, -135.0f));  // Left eye left corner
+  model_points.push_back(cv::Point3d(225.0f, 170.0f, -135.0f));   // Right eye right corner
+  model_points.push_back(cv::Point3d(-150.0f, -150.0f, -125.0f)); // Left Mouth corner
+  model_points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f));  // Right mouth corner
 
   // Camera internals
   double focal_length = im.cols;  // Approximate focal length.
   cv::Point2d center = cv::Point2d(im.cols / 2, im.rows / 2);
-  cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << focal_length, 0, center.x,
-                           0, focal_length, center.y, 0, 0, 1);
-  cv::Mat dist_coeffs = cv::Mat::zeros(
-      4, 1, cv::DataType<double>::type);  // Assuming no lens distortion
+  cv::Mat camera_matrix = (cv::Mat_<double>(3, 3) << focal_length, 0, center.x, 0, focal_length, center.y, 0, 0, 1);
+  cv::Mat dist_coeffs = cv::Mat::zeros(4, 1, cv::DataType<double>::type);  // Assuming no lens distortion
 
   std::cout << "Camera Matrix " << std::endl << camera_matrix << std::endl;
   // Output rotation and translation
@@ -40,8 +35,7 @@ int main(int argc, char **argv) {
   cv::Mat translation_vector;
 
   // Solve for pose
-  cv::solvePnP(model_points, image_points, camera_matrix, dist_coeffs,
-               rotation_vector, translation_vector);
+  cv::solvePnP(model_points, image_points, camera_matrix, dist_coeffs, rotation_vector, translation_vector);
 
   // Project a 3D point (0, 0, 1000.0) onto the image plane.
   // We use this to draw a line sticking out of the nose
@@ -49,14 +43,13 @@ int main(int argc, char **argv) {
   std::vector<cv::Point2d> nose_end_point2D;
 
   // Nose tip 的 3d 点坐标为 (0, 0, 0)
-  // 保持 x，y 轴的坐标不变，修改 z 轴的坐标为 z'。
+  // 保持 x，y 轴的坐标不变，修改 z 轴的坐标为 z'
   // 线段 zz' 就是鼻子的方向（人脸朝向）
   nose_end_point3D.push_back(cv::Point3d(0, 0, 1000.0));
 
   // 将 3d 点投影到图像上
   // 我们得到 R 和 t 矩阵后，就可以通过一个 3d 点转换为图片上的 2d 点
-  cv::projectPoints(nose_end_point3D, rotation_vector, translation_vector,
-                    camera_matrix, dist_coeffs, nose_end_point2D);
+  cv::projectPoints(nose_end_point3D, rotation_vector, translation_vector, camera_matrix, dist_coeffs, nose_end_point2D);
 
   // 画出眼睛，鼻子等特征点
   for (int i = 0; i < image_points.size(); i++) {
@@ -67,8 +60,7 @@ int main(int argc, char **argv) {
   cv::line(im, image_points[0], nose_end_point2D[0], cv::Scalar(255, 0, 0), 2);
 
   std::cout << "Rotation Vector " << std::endl << rotation_vector << std::endl;
-  std::cout << "Translation Vector" << std::endl
-            << translation_vector << std::endl;
+  std::cout << "Translation Vector" << std::endl << translation_vector << std::endl;
 
   std::cout << nose_end_point2D << std::endl;
 

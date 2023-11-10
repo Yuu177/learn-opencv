@@ -32,8 +32,7 @@ int main() {
 
     // 在原图上绘制特征点
     for (int64 j = 0; j < shape.num_parts(); ++j) {
-      cv::circle(img, cv::Point(shape.part(j).x(), shape.part(j).y()), 2,
-                 cv::Scalar(0, 255, 0), -1);
+      cv::circle(img, cv::Point(shape.part(j).x(), shape.part(j).y()), 2, cv::Scalar(0, 255, 0), -1);
     }
   }
 
