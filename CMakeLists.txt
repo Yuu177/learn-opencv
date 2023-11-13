@@ -10,5 +10,5 @@ conan_basic_setup()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(face-detection)
-add_subdirectory(facial-landmarks)
+add_subdirectory(face-landmark-detection)
 add_subdirectory(head-pose-estimation)
